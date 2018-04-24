@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include <cstdlib>
+#include <stack>
 using namespace std;
 
 typedef unsigned int uint;
@@ -11,6 +12,7 @@ const int ERROR_INVALID_CODE_LENGTH = -2;
 const int ERROR_UNKNOWN_KEYWORD = -3;
 const int ERROR_UNCLOSED_LOOP = -4;
 const int ERROR_BAD_ACCESS = -5;
+const int ERROR_ACCESS_TO_EMPTY_STACK = -6;
 const uint BLOCK_SIZE = 3;
 const uint CODE_MAX_LENGTH = 1024 * BLOCK_SIZE;
 const uint MEM_MAX_LENGTH = 30000; // bf standart
@@ -21,8 +23,10 @@ string code; // code
 uint codelen; // code length in chnars
 char *mem; // memory
 int memptr; // current mem cell position
-int R; // result register
+int R, PTR; // result register
 bool P; // predicate register
+stack<char> Stack;
+int stacksz;
 
 void BadEnd(string errmsg) {
     cout << endl << errmsg << endl << "Press any key for continue\n";
@@ -42,6 +46,9 @@ bool IsValidCodeSize(const int size) {
 void Init() {
     R = 0;
     P = false;
+    PTR = 0;
+    Stack = stack<char>();
+    stacksz=0;
     mem = new char[MEM_MAX_LENGTH];
     memptr = 0;
 }
@@ -64,6 +71,7 @@ bool LazyTest() {
         "nin", // next if NULL => bf [
         "bim", // go if more => bf ]
         // extension
+        // v 0.0.1
         "add", // R = a + b
         "sub", // R = a - b
         "mul", // R = a * b
@@ -86,8 +94,21 @@ bool LazyTest() {
         "rnd", // a = -127 + rnd % 255 
         "oul", // cout << a << endl
         "inn", // cin >> (int)a
+        // v 0.0.2
+        "nop", // just ignore
+        "ptr", // *ptr = &a
+        "ret", // goto *ptr
+        "npt", // *ptr = NULL
+        "not", // P = !P
+        "psh", // stack.push(a)
+        "pop", // a = stack.pop()
+        "psk", // cout << stack
+        "adc", // a += 10
+        "sdc", // a -= 10
+        "nif", // next if (!P) => bit
+        "bit", // go if (P) => nif
     };
-    int kwlen = 30; // shia_labeouf_magic.gif
+    int kwlen = 42; // shia_labeouf_magic.gif
     string sub = new char[BLOCK_SIZE];
     bool res = true;
     for (int i=0;i<codelen;i+=BLOCK_SIZE) {
@@ -283,6 +304,83 @@ int Interpret() {
             else if (i > CHAR_MAX) i = CHAR_MAX;
             mem[memptr] = i;
         } 
+        else if (sub=="ptr") { // save current cell in pointer
+            PTR = memptr;
+        } 
+        else if (sub=="ret") { // select cell from pointer
+            memptr = PTR;
+        } 
+        else if (sub=="npt") { // set pointer value as 0
+            PTR = 0;
+        } 
+        else if (sub=="not") { // reverse P register value
+            P = !P;
+        } 
+        else if (sub=="psh") { // 
+            Stack.push(mem[memptr]);
+            stacksz++;
+        } 
+        else if (sub=="pop") { // 
+            if (stacksz > 0) {
+                mem[memptr] = Stack.top();
+                Stack.pop();
+                stacksz--;
+            } else {
+                BadEnd("Acess to empty stack");
+                return ERROR_ACCESS_TO_EMPTY_STACK;
+            }        
+        } 
+        else if (sub=="psk") { // 
+            while (stacksz>0) {
+                cout << Stack.top();
+                Stack.pop();
+                stacksz--;
+            }
+        } 
+        else if (sub=="adc") { // 
+            int i = mem[memptr] + 10;
+            if (i > CHAR_MAX) 
+                mem[memptr] = CHAR_MAX;
+            else 
+                mem[memptr] = i;
+        } 
+        else if (sub=="sdc") { // 
+            int i = mem[memptr] - 10;
+            if (i < CHAR_MIN) 
+                mem[memptr] = CHAR_MIN;
+            else 
+                mem[memptr] = i;
+        }  
+        else if (sub=="nif") { //
+            if (!P) continue;
+            com+=BLOCK_SIZE;
+            if (com >= CODE_MAX_LENGTH) {
+                BadEnd("Unclosed loop");
+                return ERROR_UNCLOSED_LOOP;
+            }
+            while (lvl != 0) {
+                string temp = code.substr(com,BLOCK_SIZE);
+                if (temp == "nif") lvl++;
+                else if (temp == "bit") lvl--;
+                temp.clear();
+                com+=BLOCK_SIZE;
+            }
+        } 
+        else if (sub=="bit") { //
+            if (P) continue;
+            com-=BLOCK_SIZE;
+            if (com < 0) {
+                BadEnd("Unclosed loop");
+                return ERROR_UNCLOSED_LOOP;
+            }
+            while (lvl != 0) {
+                string temp = code.substr(com,BLOCK_SIZE);
+                if (temp == "nif") lvl--;
+                else if (temp == "bit") lvl++;
+                temp.clear();
+                com+=BLOCK_SIZE;
+            }
+        }
         else {
             // ignore
         }
@@ -293,6 +391,7 @@ int Interpret() {
 
 void ClearData() {
     code.clear();
+    Stack = stack<char>();
     delete[] mem;
 }
 
