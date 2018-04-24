@@ -1,4 +1,6 @@
-# Ter
+# Latest version 0.0.1
+
+# About
 Turing is a complete esoteric language based on the Brainfack, but potentially much more extensible.
 
 # What do you know about pain?
