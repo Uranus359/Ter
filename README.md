@@ -5,10 +5,16 @@ Turing is a complete esoteric language based on the Brainfack, but potentially m
 I do not like the popularity of the BF as a hard-to-read language, but I like the "mechanics".
 
 BF hello World with loops
+
+```
 ++++++++++[>+++++++>++++++++++>+++<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.
+```
 
 Translated to Ter
+
+```
 incincincincincincincincincincninrhtincincincincincincincrhtincincincincincincincincincincrhtincincinclftlftlftdecbimrhtincincoutrhtincoutincincincincincincincoutoutincincincoutrhtincincoutlftlftincincincincincincincincincincincincincincincoutrhtoutincincincoutdecdecdecdecdecdecoutdecdecdecdecdecdecdecdecoutrhtincout
+```
 
 # How to use?
 Launch interpreter and input code. Press Enter to run interpret.
