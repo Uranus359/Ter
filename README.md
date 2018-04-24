@@ -1,4 +1,4 @@
-# Ter `[Latest version 0.0.1]`
+# Ter `[Latest version 0.0.2]`
 
 ## About
 Turing is a complete esoteric language based on the Brainfack, but potentially much more extensible.
@@ -22,7 +22,7 @@ incincincincincincincincincincninrhtincincincincincincincrhtincincincincincincin
 Launch interpreter and input code. Press Enter to run interpret.
 
 ## What are the differences from BF?
-Availability two (int32 and bool) registers for results some operations, 22 new commands (includes math and logic operations from other languages).
+Availability two (int32 and bool) registers for results some operations, 34 new commands (includes math and logic operations from other languages).
 
 ## For what?
 1) "Just for lulz" (c)
