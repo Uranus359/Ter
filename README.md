@@ -22,7 +22,7 @@ incincincincincincincincincincninrhtincincincincincincincrhtincincincincincincin
 Launch interpreter and input code. Press Enter to run interpret.
 
 ## What are the differences from BF?
-Availability two (int32 and bool) registers for results some operations, 34 new commands (includes math and logic operations from other languages).
+Availability two (int32 and bool) registers for results some operations, pointer to save cell, stack, 34 new commands (includes math and logic operations from other languages).
 
 ## For what?
 1) "Just for lulz" (c)
