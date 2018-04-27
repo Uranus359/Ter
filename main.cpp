@@ -13,6 +13,7 @@ const int ERROR_UNKNOWN_KEYWORD = -3;
 const int ERROR_UNCLOSED_LOOP = -4;
 const int ERROR_BAD_ACCESS = -5;
 const int ERROR_ACCESS_TO_EMPTY_STACK = -6;
+const int ERROR_UNCLOSED_STACK_PRELOAD_TOKEN = -7;
 const uint BLOCK_SIZE = 3;
 const uint CODE_MAX_LENGTH = 1024 * BLOCK_SIZE;
 const uint MEM_MAX_LENGTH = 30000; // bf standart
@@ -51,6 +52,29 @@ void Init() {
     stacksz=0;
     mem = new char[MEM_MAX_LENGTH];
     memptr = 0;
+}
+
+bool PreloadStack(string &source) {
+    string temp = source;
+    if (source[0] == '@') {
+        bool close=false;
+        for (int i=1;i<codelen;i++) {
+            if (source[i] == '@') {
+                int j=i-1;
+                while (j>0) {
+                    Stack.push(source[j]);
+                    stacksz++;
+                    j--;
+                }
+                source = source.substr(i+1,codelen-(i+1));
+                codelen = source.length();
+                close = true;
+                break;
+            }
+        }
+        return close;
+    }
+    return true;
 }
 
 void ClearMem() {
@@ -107,6 +131,8 @@ bool LazyTest() {
         "sdc", // a -= 10
         "nif", // next if (!P) => bit
         "bit", // go if (P) => nif
+        // v 0.0.3
+        "rvs", // reverse stack
     };
     int kwlen = 42; // shia_labeouf_magic.gif
     string sub = new char[BLOCK_SIZE];
@@ -381,6 +407,16 @@ int Interpret() {
                 com+=BLOCK_SIZE;
             }
         }
+        else if (sub=="rvs") { //
+            stack<char> temp = stack<char>();
+            int i = stacksz;
+            while (i > 0) {
+                temp.push(Stack.top());
+                Stack.pop();
+                i--;
+            }
+            Stack = stack<char>(temp);
+        }
         else {
             // ignore
         }
@@ -399,12 +435,17 @@ int main() {
     start:
         cout << "Press enter your Ter code\n";
         codelen = Input(code);
-	if (!IsValidCodeSize(codelen)) {
+	Init();
+        if (!PreloadStack(code)) {
+            BadEnd("Unclodes stack preload token");
+            result = ERROR_UNCLOSED_STACK_PRELOAD_TOKEN;
+            goto exitdialog;
+        }
+        if (!IsValidCodeSize(codelen)) {
             BadEnd("Invalid code length");
             result = ERROR_INVALID_CODE_LENGTH;
             goto exitdialog;
 	}
-        Init();
         if (!LazyTest()) {
             BadEnd("Unknown keyword");
             result = ERROR_UNKNOWN_KEYWORD;
