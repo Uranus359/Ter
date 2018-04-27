@@ -18,11 +18,17 @@ Translated to Ter
 incincincincincincincincincincninrhtincincincincincincincrhtincincincincincincincincincincrhtincincinclftlftlftdecbimrhtincincoutrhtincoutincincincincincincincoutoutincincincoutrhtincincoutlftlftincincincincincincincincincincincincincincincoutrhtoutincincincoutdecdecdecdecdecdecoutdecdecdecdecdecdecdecdecoutrhtincout
 ```
 
+But Ter 0.0.3+ may
+
+```
+@HelloWorld!@psk
+```
+
 ## How to use?
 Launch interpreter and input code. Press Enter to run interpret.
 
 ## What are the differences from BF?
-Availability two (int32 and bool) registers for results some operations, pointer to save cell, stack, 34 new commands (includes math and logic operations from other languages).
+Availability two (int32 and bool) registers for results some operations, pointer to save cell, stack, 35 new commands (includes math and logic operations from other languages).
 
 ## For what?
 1) "Just for lulz" (c)
