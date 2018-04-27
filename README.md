@@ -1,4 +1,4 @@
-# Ter `[Latest version 0.0.2]`
+# Ter `[Latest version 0.0.3]`
 
 ## About
 Turing is a complete esoteric language based on the Brainfack, but potentially much more extensible.
